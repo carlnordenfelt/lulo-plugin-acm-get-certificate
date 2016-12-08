@@ -13,6 +13,7 @@ npm install lulo-plugin-acm-get-certificate --save
 ### Properties
 * DomainName: The Domain name you want to match. Note that this must be the primary domain name of the certificate.
 * CertificateStatuses: An array of certificate statuses to consider. Optional. Default is 'ISSUED'. For a list of valid statuses, please see [the SDK documentation](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ACM.html#listCertificates-property)
+* Region: Override the AWS Region from where to list certificates. Useful when getting CloudFront certificates which have to be issued in us-east-1. Optional. Default is where the CustomResource is deployed.
 
 ### Return Values
 When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the ARN of the certificate.

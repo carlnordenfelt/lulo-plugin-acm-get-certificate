@@ -7,6 +7,7 @@ var sinon = require('sinon');
 describe('Index unit tests', function () {
     var subject;
     var listCertificatesStub = sinon.stub();
+    var configUpdateStub = sinon.stub();
     var event;
 
     before(function () {
@@ -18,6 +19,9 @@ describe('Index unit tests', function () {
         var awsSdkStub = {
             ACM: function () {
                 this.listCertificates = listCertificatesStub;
+            },
+            config: {
+                update: configUpdateStub
             }
         };
 
@@ -30,6 +34,7 @@ describe('Index unit tests', function () {
             {},
             { DomainName: 'DomainName', CertificateArn: 'CertificateArn' }
         ]});
+        configUpdateStub.reset();
         event = {
             ResourceProperties: {
                 DomainName: 'DomainName'
@@ -62,6 +67,16 @@ describe('Index unit tests', function () {
                 expect(error).to.equal(null);
                 expect(response.physicalResourceId).to.equal('CertificateArn');
                 expect(listCertificatesStub.calledOnce).to.equal(true);
+                expect(configUpdateStub.called).to.equal(false);
+                done();
+            });
+        });it('should succeed with region override', function (done) {
+            event.ResourceProperties.Region = 'us-east-1';
+            subject.create(event, {}, function (error, response) {
+                expect(error).to.equal(null);
+                expect(response.physicalResourceId).to.equal('CertificateArn');
+                expect(listCertificatesStub.calledOnce).to.equal(true);
+                expect(configUpdateStub.calledOnce).to.equal(true);
                 done();
             });
         });

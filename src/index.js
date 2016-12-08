@@ -1,8 +1,6 @@
 'use strict';
 
 var aws = require('aws-sdk');
-var acm = new aws.ACM({ apiVersion: '2015-12-08' });
-
 var pub = {};
 
 pub.validate = function (event) {
@@ -12,7 +10,12 @@ pub.validate = function (event) {
 };
 
 pub.create = function (event, _context, callback) {
+    if (event.ResourceProperties.Region) {
+        aws.config.update({ region: event.ResourceProperties.Region });
+    }
+    var acm = new aws.ACM({ apiVersion: '2015-12-08' });
     getCertificate(
+        acm,
         event.ResourceProperties.DomainName,
         event.ResourceProperties.CertificateStatuses,
         null,
@@ -30,7 +33,8 @@ pub.delete = function (_event, _context, callback) {
 
 module.exports = pub;
 
-function getCertificate(domainName, statuses, nextToken, callback) {
+/* eslint-disable max-params */
+function getCertificate(acm, domainName, statuses, nextToken, callback) {
     var params = {};
     if (statuses) {
         params.CertificateStatuses = statuses;
@@ -59,7 +63,7 @@ function getCertificate(domainName, statuses, nextToken, callback) {
             };
             return callback(null, data);
         } else if (response.NextToken) {
-            return getCertificate(domainName, statuses, response.NextToken, callback);
+            return getCertificate(acm, domainName, statuses, response.NextToken, callback);
         }
         return callback(new Error('Certificate resource for ' + domainName + ' not found'));
     });
