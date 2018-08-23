@@ -25,16 +25,10 @@ pub.validate = function (event) {
 pub.create = function (event, _context, callback) {
     if (event.ResourceProperties.Region) {
         aws.config.update({region: event.ResourceProperties.Region});
-        delete event.ResourceProperties.Region;
     }
     acm = new aws.ACM({apiVersion: '2015-12-08'});
 
-    let conflictResolutionStrategy = event.ResourceProperties.ConflictResolutionStrategy;
-    delete event.ResourceProperties.ConflictResolutionStrategy;
-    let domainName = event.ResourceProperties.DomainName;
-    delete event.ResourceProperties.DomainName;
-
-    getCertificates(domainName, event.ResourceProperties, conflictResolutionStrategy, null, [], callback);
+    getCertificates(event, null, [], callback);
 };
 
 pub.update = function (event, context, callback) {
@@ -48,9 +42,15 @@ pub.delete = function (_event, _context, callback) {
 module.exports = pub;
 
 /* eslint-disable max-params */
-function getCertificates(domainName, params, conflictResolutionStrategy, nextToken, matchingCertificates, callback) {
-    if (!params.CertificateStatuses) {
-        params.CertificateStatuses = ['ISSUED'];
+function getCertificates(event, nextToken, matchingCertificates, callback) {
+    let conflictResolutionStrategy = event.ResourceProperties.ConflictResolutionStrategy;
+    let domainName = event.ResourceProperties.DomainName;
+
+    let params = {
+        CertificateStatuses: event.ResourceProperties.CertificateStatuses || ['ISSUED'],
+    };
+    if (event.ResourceProperties.Includes) {
+        params.Includes = event.ResourceProperties.Includes;
     }
     if (nextToken) {
         params.NextToken = nextToken;
@@ -76,7 +76,7 @@ function getCertificates(domainName, params, conflictResolutionStrategy, nextTok
         }
 
         if (response.NextToken) {
-            return getCertificates(domainName, params, conflictResolutionStrategy, response.NextToken, matchingCertificates, callback);
+            return getCertificates(event, response.NextToken, matchingCertificates, callback);
         } else if (matchingCertificates.length === 0) {
             return callback(new Error('Certificate resource for ' + domainName + ' not found'));
         } else if (matchingCertificates.length === 1) {

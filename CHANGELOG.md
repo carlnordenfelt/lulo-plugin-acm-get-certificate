@@ -1,3 +1,6 @@
+## 2.0.1
+* Bug fixes
+
 ## 2.0.0
 **Breaking changes**
 

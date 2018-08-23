@@ -88,6 +88,7 @@ describe('Index unit tests', function () {
             event.ResourceProperties.ConflictResolutionStrategy = 'FIRST';
         });
         it('should succeed ', function (done) {
+            event.ResourceProperties.Includes = {}; // Coverage
             subject.create(event, {}, function (error, response) {
                 expect(error).to.equal(null);
                 expect(response.physicalResourceId).to.equal('CertificateArn');
