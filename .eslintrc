@@ -1,15 +1,8 @@
 {
-    "baseConfig": true,
+    "extends": "eslint:recommended",
     "env": {
-        "node": true
-    },
-    "globals": {
-        "it": true,
-        "describe": true,
-        "after": true,
-        "afterEach": true,
-        "before": true,
-        "beforeEach": true
+        "node": true,
+        "es6": true
     },
     "plugins": [
         "import",
