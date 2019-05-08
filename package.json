@@ -36,7 +36,7 @@
     "aws-sdk": "2.*",
     "chai": "3.5.0",
     "coveralls": "^3.0.2",
-    "eslint": "^5.4.0",
+    "eslint": "^5.16.0",
     "eslint-config-defaults": "9.0.0",
     "eslint-plugin-filenames": "1.0.0",
     "eslint-plugin-import": "1.10.2",
